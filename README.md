@@ -1,11 +1,8 @@
 # Heatzy Pilote Card
-
-[![GitHub Release][releases-shield]][releases]
 [![HACS Supported](https://img.shields.io/badge/HACS-Not_Supported-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
-[![License][license-shield]](LICENSE.md)
 
 
-Cette card est basée sur l'intégration de [Devotics](https://github.com/Devotics/heatzy-home-hassistant)
+Cette card est basée sur l'intégration de [Devotics](https://github.com/Devotics/heatzy-home-hassistant).
 
 # Installation
 
