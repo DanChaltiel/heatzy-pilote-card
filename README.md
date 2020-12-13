@@ -51,7 +51,9 @@ title: Mes chauffages
 language: fr
 elements:
   - entity: climate.bureau
-    temp_sensor: sensor.tempeature_bureau
-  - entity: sensor.temperature_bureau
-    friendly_name: Bureau test
+    temp_sensor: sensor.temperature_bureau
+    friendly_name: Le Bureau
 ```
+
+![image](https://user-images.githubusercontent.com/15105152/102013859-05928380-3d53-11eb-8f4c-d05fb543dc9f.png)
+
