@@ -29,7 +29,7 @@ const MODES = [ // https://cdn.materialdesignicons.com/5.3.45/
     {name:"none", icon:"mdi:do-not-disturb"}, 
     {name:"away", icon:"mdi:snowflake"},
     {name:"eco", icon:"mdi:leaf"}, 
-    {name:"comfort", icon:"mdi:weather-sunny"} 
+    {name:"comfort", icon:"mdi:white-balance-sunny"} 
 ];
 
 class HeatzyPiloteCard extends LitElement {
