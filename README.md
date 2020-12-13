@@ -26,18 +26,22 @@ Tuto en français : https://hacf.fr/installer-ajouter-integrations-customisation
 
 ### Main Options
 
-| Name | Type | Default | Supported options | Description |
-| `type`| string | **Required** | `custom:heatzy-pilote-card` | Type of the card  |
-| `title`| string | optional | none | Optional title in the header  |
-| `language`| string | EN | EN\|FR | Language  |
-| `elements`| array | **Required** | none | List of elements |
+| Name       | Type   | Default      | Supported options           | Description |
+| ---------- | ------ | ------------ | --------------------------- | ----------------------------------- |
+| `type`     | string | **Required** | `custom:heatzy-pilote-card` | Type of the card  |
+| `title`    | string | optional     | none                        | Optional title in the header  |
+| `language` | string | EN           | EN\|FR                      | Language  |
+| `elements` | array  | **Required** | none                        | List of elements 
+
 
 ### Options for Elements
 
 | Name | Type | Default | Supported options | Description |
+| ---------- | ------ | ------------ | --------------------------- | ----------------------------------- |
 | `entity`| string | **Required** | none | A `climate` entity, likely from [Devotics](https://github.com/Devotics/heatzy-home-hassistant) integration |
 | `friendly_name`| string | optional | the ID of the entity, minus `climate.`, capitalized | Name of the entity  |
-| `temp_sensor`| string | optional | none | Optional sensor to display the temperature of the room  |
+| `temp_sensor`| string | optional | none | Optional sensor to display the temperature of the room 
+
 
 ### Example 
 
@@ -47,7 +51,10 @@ title: Mes chauffages
 language: fr
 elements:
   - entity: climate.bureau
-    temp_sensor: sensor.tempeature_bureau
-  - entity: sensor.temperature_bureau
-    friendly_name: Bureau test
+    temp_sensor: sensor.temperature_bureau
+    friendly_name: Le Bureau
 ```
+
+![image](https://user-images.githubusercontent.com/15105152/102015208-7b4e1d80-3d5a-11eb-97f1-5b79b32d4da6.png)
+
+
