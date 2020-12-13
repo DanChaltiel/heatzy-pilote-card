@@ -1,0 +1,8 @@
+{
+  "name": "Heatzy Pilote Card",
+  "content_in_root": true,
+  "filename": "heatzy-pilote-card.js",
+  "render_readme": true,
+  "domains": ["climate", "sensor", "switch"]
+  "country": ["FR"]
+}
