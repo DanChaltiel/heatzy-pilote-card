@@ -59,13 +59,13 @@ class HeatzyPiloteCard extends LitElement {
       const name = elt.friendly_name ? elt.friendly_name : this._inferName(ent);
       const temp = this._getTemperature(elt.temp_sensor, 1);
       const stateObj = this.hass.states[ent];
-      // const preset_mode = stateObj.attributes.preset_mode;
-      const preset_mode = this._getPresetModeTranslation(stateObj.attributes.preset_mode);
+      const preset_mode = stateObj.attributes.preset_mode;
+      const preset_mode_tr = this._getPresetModeTranslation(preset_mode);
       return stateObj ?
         html`<div class="state">      
           <h2 class="heat_name">${name} ${temp}</h2>    
           <span class="heat_icon_list">
-            ${preset_mode} ${this._getIconList(MODES, preset_mode, stateObj.entity_id)}
+            ${preset_mode_tr} ${this._getIconList(MODES, preset_mode, stateObj.entity_id)}
           </span>
         </div>`:
         html`<div class="not-found">Entity '${ent}' not found.</div>`;
