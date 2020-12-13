@@ -55,5 +55,6 @@ elements:
     friendly_name: Le Bureau
 ```
 
-![image](https://user-images.githubusercontent.com/15105152/102014207-2eb41380-3d55-11eb-8de2-481a69d6406a.png)
+![image](https://user-images.githubusercontent.com/15105152/102015208-7b4e1d80-3d5a-11eb-97f1-5b79b32d4da6.png)
+
 
