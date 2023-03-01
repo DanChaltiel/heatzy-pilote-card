@@ -8,7 +8,7 @@ import {
 const translation = {
   en: {
     modes: {
-      "none": "None",
+      "none": "Off",
       "away": "Away",
       "eco": "Eco",
       "comfort": "Comfort"
@@ -25,11 +25,11 @@ const translation = {
 };
 
 
-const MODES = [ // https://cdn.materialdesignicons.com/5.3.45/
-    {name:"none", icon:"mdi:do-not-disturb"}, 
-    {name:"away", icon:"mdi:snowflake"},
-    {name:"eco", icon:"mdi:leaf"}, 
-    {name:"comfort", icon:"mdi:white-balance-sunny"} 
+const MODES = [ // https://cdn.materialdesignicons.com/7.1.96/
+    {name:"none", icon:"mdi:minus-circle", style:"heat_selected_none"}, 
+    {name:"comfort", icon:"mdi:white-balance-sunny", style:"heat_selected_comfort"},
+    {name:"eco", icon:"mdi:weather-night", style:"heat_selected_eco"}, 
+    {name:"away", icon:"mdi:snowflake", style:"heat_selected_away"}
 ];
 
 class HeatzyPiloteCard extends LitElement {
@@ -48,7 +48,7 @@ class HeatzyPiloteCard extends LitElement {
 
   _getTitle() {    
     if(this.config.title){
-      return html`<h1 class="card-header">${this.config.title}</h1>`;
+      return html`<h2 class="card-header">${this.config.title}</h2>`;
     }
     return html``;
   }
@@ -63,7 +63,7 @@ class HeatzyPiloteCard extends LitElement {
       const preset_mode_tr = this._getPresetModeTranslation(preset_mode);
       return stateObj ?
         html`<div class="state">      
-          <h2 class="heat_name">${name} ${temp}</h2>    
+          <h4 class="heat_name">${name} ${temp}</h4>    
           <span class="heat_icon_list">
             ${preset_mode_tr} ${this._getIconList(MODES, preset_mode, stateObj.entity_id)}
           </span>
@@ -74,7 +74,7 @@ class HeatzyPiloteCard extends LitElement {
 
   _getIconList(modes_list, mode_selected, entity_id){
       return modes_list.map(x => {
-          x.heat_class=x.name==mode_selected?'heat_selected':'';
+          x.heat_class=x.name==mode_selected?x.style:'';
           const xx = html`<ha-icon class="heat_icon ${x.heat_class}" icon="${x.icon}" 
                            @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
           return(xx);
@@ -186,6 +186,16 @@ class HeatzyPiloteCard extends LitElement {
             margin:0;
             margin-left:25px;
         }
+        
+        .state h3 {
+            margin:0;
+            margin-left:15px;
+        }
+        
+        .state h4 {
+            margin:0;
+            margin-left:15px;
+        }
 
         .heat_icon_list {
             float:right;
@@ -202,6 +212,18 @@ class HeatzyPiloteCard extends LitElement {
         }
         .heat_selected{
             color: green !important;
+        }
+        .heat_selected_none{
+            color: blue !important;
+        }
+        .heat_selected_away{
+            color: white !important;
+        }
+        .heat_selected_eco{
+            color: green !important;
+        }
+        .heat_selected_comfort{
+            color: red !important;
         }
         .heat_icon{
             color: grey;
