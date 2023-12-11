@@ -2,22 +2,30 @@
 [![HACS Supported](https://img.shields.io/badge/HACS-Not_Supported-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 
 
-Cette card est basée sur l'intégration de [Devotics](https://github.com/Devotics/heatzy-home-hassistant).
+Cette card est basée sur l'intégration de [Cyr-ius](https://github.com/Cyr-ius/hass-heatzy)
+
+# Ce qu'apporte ce fork
+
+- Compatibilité rétablie avec l'intégration de Cyr-ius suite aux modifications introduites avec la v5.8.3 du 25/10/2023.
+
+- Gestion des profils "mode clair" ou "mode sombre" de Home Assistant et adaptation des couleurs en fonction du profil en cours d'utilisation.
+
+- Adaptation du choix des icônes et des couleurs afin de ressembler davantage à l'application officielle heatzy.
+
+| Light mode       | Dark mode   | 
+| ---------- | ------ |
+| ![image](https://github.com/luke7101/heatzy-pilote-card/assets/58976540/e4106ff2-c398-4e55-a047-58b646473269)     | ![image](https://github.com/luke7101/heatzy-pilote-card/assets/58976540/c1d26695-07cc-4d59-8086-3e655fa1a93c) |
+
 
 # Installation
 
-Copier `heatzy-pilote-card.js` dans `config/www/community/heatzy-pilote-card` (créer le dossier si besoin). Ensuite, dans `config.yaml`, ajouter un module de ressources comme ceci:
+Copiez `heatzy-pilote-card.js` dans `config/www/community/heatzy-pilote-card` (créer le dossier si besoin), ensuite ajoutez la ressource dans Home Assitant.
+Rendez-vous [ici](https://my.home-assistant.io/redirect/lovelace_dashboards/) pour ouvrir la configuration des tableaux de bord et cliquez sur les trois petits point en hauit à droite et cliquez "Ressources".
+Sur cette page vous pouvez ajouter une nouvelle ressource en cliquant sur le bouton "Ajouter ressource", il faudra ensuite spécifier l'URL `/local/community/heatzy-pilote-card/heatzy-pilote-card.js?v=2.0.0` et le type de ressource "Javascript".
 
-```yaml
-lovelace:
-  mode: yaml
-  resources:
-    - url: /hacsfiles/heatzy-pilote-card/heatzy-pilote-card.js
-      type: module
-```
+Annotation:
+A chaque fois que vous voulez remplacer ou mettre à jour le fichier heatzy-pilote-card.js il vous faudra incrementer le numéro de version spécifié dans l'URL de la ressource afin qu'Home Assistant le prenne en compte ex: `/local/community/heatzy-pilote-card/heatzy-pilote-card.js?v=2.0.1`
 
-Intégration à HACS à venir.
-Tuto en français : https://hacf.fr/installer-ajouter-integrations-customisations-avec-hacs/
 
 # Configuration de la carte
 
@@ -43,15 +51,11 @@ Tuto en français : https://hacf.fr/installer-ajouter-integrations-customisation
 ### Example 
 
 ```yaml
-type: 'custom:heatzy-pilote-card'
+type: custom:heatzy-pilote-card
 title: Mes chauffages
 language: fr
 elements:
-  - entity: climate.bureau
-    temp_sensor: sensor.temperature_bureau
-    friendly_name: Le Bureau
+  - entity: climate.rad_bureau
+    temp_sensor: sensor.bureau_temperature
+    friendly_name: Bureau
 ```
-
-![image](https://user-images.githubusercontent.com/15105152/102015208-7b4e1d80-3d5a-11eb-97f1-5b79b32d4da6.png)
-
-
