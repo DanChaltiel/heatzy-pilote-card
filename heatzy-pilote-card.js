@@ -8,11 +8,16 @@ import {
 const translation = {
   en: {
     modes: {
-      "none": "None",
+      "none": "Off",
       "away": "Away",
       "eco": "Eco",
       "comfort": "Comfort"
-    }
+    },
+	hvacmodes: {
+	  "auto": "Sched",
+	  "off": "Off",
+	  "heat": "On"
+	}
   },
   fr: {
     modes: {
@@ -20,16 +25,43 @@ const translation = {
       "away": "Hors-gel",
       "eco": "Eco",
       "comfort": "Confort"
-    }
+    },
+	hvacmodes: {
+	  "auto": "Prog",
+	  "off": "Off",
+	  "heat": "On"
+	}
   }
 };
 
+const MODES = [ // https://cdn.materialdesignicons.com/7.1.96/
+    {name:"none", icon:"mdi:minus-circle", style:"heat_selected_none"}, 
+    {name:"comfort", icon:"mdi:white-balance-sunny", style:"heat_selected_comfort"},
+    {name:"eco", icon:"mdi:weather-night", style:"heat_selected_eco"}, 
+    {name:"away", icon:"mdi:snowflake", style:"heat_selected_away"}	
+];
 
-const MODES = [ // https://cdn.materialdesignicons.com/5.3.45/
-    {name:"none", icon:"mdi:do-not-disturb"}, 
-    {name:"away", icon:"mdi:snowflake"},
-    {name:"eco", icon:"mdi:leaf"}, 
-    {name:"comfort", icon:"mdi:white-balance-sunny"} 
+// heat modes for darkMode
+const MODES_dark = [ // https://cdn.materialdesignicons.com/7.1.96/
+    {name:"none", icon:"mdi:minus-circle", style:"heat_selected_none_dark"}, 
+    {name:"comfort", icon:"mdi:white-balance-sunny", style:"heat_selected_comfort_dark"},
+    {name:"eco", icon:"mdi:weather-night", style:"heat_selected_eco_dark"}, 
+    {name:"away", icon:"mdi:snowflake", style:"heat_selected_away_dark"}
+];
+
+const HVACMODES = [ // https://cdn.materialdesignicons.com/7.1.96/
+    {name:"off", icon:"mdi:minus-circle", style:"heat_selected_none"}, 
+    {name:"comfort", icon:"mdi:white-balance-sunny", style:"heat_selected_comfort"},
+    {name:"eco", icon:"mdi:weather-night", style:"heat_selected_eco"}, 
+    {name:"away", icon:"mdi:snowflake", style:"heat_selected_away"}	
+];
+
+// heat modes for darkMode
+const HVACMODES_dark = [ // https://cdn.materialdesignicons.com/7.1.96/
+    {name:"off", icon:"mdi:minus-circle", style:"heat_selected_none_dark"},
+    {name:"comfort", icon:"mdi:white-balance-sunny", style:"heat_selected_comfort_dark"},
+    {name:"eco", icon:"mdi:weather-night", style:"heat_selected_eco_dark"}, 
+    {name:"away", icon:"mdi:snowflake", style:"heat_selected_away_dark"}
 ];
 
 class HeatzyPiloteCard extends LitElement {
@@ -48,42 +80,96 @@ class HeatzyPiloteCard extends LitElement {
 
   _getTitle() {    
     if(this.config.title){
-      return html`<h1 class="card-header">${this.config.title}</h1>`;
+      return html`<h2 class="card-header">${this.config.title}</h2>`;
     }
     return html``;
   }
   
   _getContent(){
     return this.config.elements.map(elt => {
+	  const darkMode = this.hass.themes.darkMode;
       const ent = elt.entity;
       const name = elt.friendly_name ? elt.friendly_name : this._inferName(ent);
       const temp = this._getTemperature(elt.temp_sensor, 1);
       const stateObj = this.hass.states[ent];
-      const preset_mode = stateObj.attributes.preset_mode;
+	  const hvac_mode = stateObj.state // off, auto, heat
+      const hvac_action = stateObj.attributes.hvac_action; // off, heating
+	  const preset_mode = stateObj.attributes.preset_mode; // (null), comfort, eco, away
       const preset_mode_tr = this._getPresetModeTranslation(preset_mode);
-      return stateObj ?
-        html`<div class="state">      
-          <h2 class="heat_name">${name} ${temp}</h2>    
-          <span class="heat_icon_list">
-            ${preset_mode_tr} ${this._getIconList(MODES, preset_mode, stateObj.entity_id)}
-          </span>
-        </div>`:
-        html`<div class="not-found">Entity '${ent}' not found.</div>`;
-    });
+      const hvac_mode_tr = this._getHvacModeTranslation(hvac_mode);
+		if(darkMode==true){
+		  if(hvac_mode!='off'){
+			  return stateObj ?
+				html`<div class="state">      
+				  <h4 class="heat_name">${name} ${temp}</h4>    
+				  <span class="heat_icon_list">
+					${preset_mode_tr} ${this._getIconList(MODES_dark, preset_mode, stateObj.entity_id)}
+				  </span>
+				</div>`:
+				html`<div class="not-found">Entity '${ent}' not found.</div>`;
+		  }
+		  else{
+			  return stateObj ?
+				html`<div class="state">      
+				  <h4 class="heat_name">${name} ${temp}</h4>    
+				  <span class="heat_icon_list">
+					${hvac_mode_tr} ${this._getIconList(HVACMODES_dark, hvac_mode, stateObj.entity_id)}
+				  </span>
+				</div>`:
+				html`<div class="not-found">Entity '${ent}' not found.</div>`;
+		  }
+		}
+		if(darkMode!=true){
+		  if(hvac_mode!='off'){
+			  return stateObj ?
+				html`<div class="state">      
+				  <h4 class="heat_name">${name} ${temp}</h4>    
+				  <span class="heat_icon_list">
+					${preset_mode_tr} ${this._getIconList(MODES, preset_mode, stateObj.entity_id)}
+				  </span>
+				</div>`:
+				html`<div class="not-found">Entity '${ent}' not found.</div>`;
+		  }
+		  else{
+			  return stateObj ?
+				html`<div class="state">      
+				  <h4 class="heat_name">${name} ${temp}</h4>    
+				  <span class="heat_icon_list">
+					${hvac_mode_tr} ${this._getIconList(HVACMODES, hvac_mode, stateObj.entity_id)}
+				  </span>
+				</div>`:
+				html`<div class="not-found">Entity '${ent}' not found.</div>`;
+		  }
+		}
+	});
   }
 
   _getIconList(modes_list, mode_selected, entity_id){
       return modes_list.map(x => {
-          x.heat_class=x.name==mode_selected?'heat_selected':'';
-          const xx = html`<ha-icon class="heat_icon ${x.heat_class}" icon="${x.icon}" 
-                           @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
-          return(xx);
+		  const darkMode = this.hass.themes.darkMode;
+		  if(darkMode==true){
+			  x.heat_class=x.name==mode_selected?x.style:'';
+			  const xx = html`<ha-icon class="heat_icon_dark ${x.heat_class}" icon="${x.icon}" 
+							   @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
+			  return(xx);
+		  }
+		  if(darkMode!=true){
+			  x.heat_class=x.name==mode_selected?x.style:'';
+			  const xx = html`<ha-icon class="heat_icon ${x.heat_class}" icon="${x.icon}" 
+							   @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
+			  return(xx);
+		  }
       });
   }
   
   _getPresetModeTranslation(preset_mode){
     const language = this.config.language;
     return translation[language].modes[preset_mode];
+  }
+  
+  _getHvacModeTranslation(hvac_mode){
+    const language = this.config.language;
+    return translation[language].hvacmodes[hvac_mode];
   }
   
   _inferName(x){
@@ -94,7 +180,7 @@ class HeatzyPiloteCard extends LitElement {
   
   _getTemperature(sensor, digits){
     const temp = this.hass.states[sensor];
-    if(sensor!=undefined && temp==undefined){ //sensor in unknrown
+    if(sensor!=undefined && temp==undefined){ //sensor in unknown
       return(html`(?°C)`);
     }
     
@@ -106,25 +192,35 @@ class HeatzyPiloteCard extends LitElement {
   }
 
 
-  _handleClick(entity_id, preset_mode) {
-    this.hass.callService('climate', 'set_preset_mode', {
-      entity_id: entity_id,
-      preset_mode: preset_mode
-    });
+  _handleClick(entity_id, clicked_mode) {
+	  if(clicked_mode=='none'){
+		this.hass.callService('climate', 'set_hvac_mode', {
+		  entity_id: entity_id,
+		  hvac_mode: 'off'
+        });  
+	  }
+	  else {
+		this.hass.callService('climate', 'set_preset_mode', {
+		  entity_id: entity_id,
+		  preset_mode: clicked_mode
+        });  
+	  }
   }
   
   
   _getWarnings() {    
     const elts = this.config.elements
         
-    //check: entity is a climate with a "preset mode" attribute
+    //check: entity is a climate with a "preset mode" attribute / ajouté si hvac_action off
     for (let i=0; i<elts.length; i++){
       const elt = elts[i];
       const entity = this.hass.states[elt.entity];
-      if(entity.attributes.preset_mode==undefined){
-        const name = elt.friendly_name? html`("${elt.friendly_name}") ` : html``;
-        return html`<hui-warning>Entity "${elt.entity}" of element #${i+1} ${name}is not a climate entity with a "preset_mode" attribute</hui-warning>`;
-      }
+		if(entity.attributes.hvac_action!='off'){
+		  if(entity.attributes.preset_mode==undefined){
+			const name = elt.friendly_name? html`("${elt.friendly_name}") ` : html``;
+			return html`<hui-warning>Entity "${elt.entity}" of element #${i+1} ${name}is not a climate entity with a "preset_mode" attribute</hui-warning>`;
+		  };
+		}
     }
     
     //check: temperature sensor is not unknown
@@ -167,7 +263,8 @@ class HeatzyPiloteCard extends LitElement {
   getCardSize() {
     return this.config.elements.length + 1;
   }
-  
+
+// CSS styles for light/dark modes  
   static get styles() {
     return css`
         .state {
@@ -186,6 +283,16 @@ class HeatzyPiloteCard extends LitElement {
             margin:0;
             margin-left:25px;
         }
+        
+        .state h3 {
+            margin:0;
+            margin-left:15px;
+        }
+        
+        .state h4 {
+            margin:0;
+            margin-left:15px;
+        }
 
         .heat_icon_list {
             float:right;
@@ -203,8 +310,37 @@ class HeatzyPiloteCard extends LitElement {
         .heat_selected{
             color: green !important;
         }
+        .heat_selected_none{
+            color: #003333 !important;
+        }
+        .heat_selected_away{
+            color: #3366CC !important;
+        }
+        .heat_selected_eco{
+            color: #003333 !important;
+        }
+        .heat_selected_comfort{
+            color: #CC3333 !important;
+        }
+        .heat_selected_none_dark{
+            color: #cecece !important;
+        }
+        .heat_selected_away_dark{
+            color: #488FC2 !important;
+        }
+        .heat_selected_eco_dark{
+            color: #0F9D58 !important;
+        }
+        .heat_selected_comfort_dark{
+            color: #CC3333 !important;
+        }
         .heat_icon{
-            color: grey;
+            color: #CCCCCC;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .heat_icon_dark{
+            color: #6F6F6F;
             cursor: pointer;
             margin-left: 10px;
         }
