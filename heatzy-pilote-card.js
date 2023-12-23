@@ -41,14 +41,6 @@ const MODES = [ // https://cdn.materialdesignicons.com/7.1.96/
     {name:"away", icon:"mdi:snowflake", style:"heat_selected_away"}	
 ];
 
-// heat modes for darkMode
-const MODES_dark = [ // https://cdn.materialdesignicons.com/7.1.96/
-    {name:"none", icon:"mdi:minus-circle", style:"heat_selected_none_dark"}, 
-    {name:"comfort", icon:"mdi:white-balance-sunny", style:"heat_selected_comfort_dark"},
-    {name:"eco", icon:"mdi:weather-night", style:"heat_selected_eco_dark"}, 
-    {name:"away", icon:"mdi:snowflake", style:"heat_selected_away_dark"}
-];
-
 const HVACMODES = [ // https://cdn.materialdesignicons.com/7.1.96/
     {name:"off", icon:"mdi:minus-circle", style:"heat_selected_none"}, 
     {name:"comfort", icon:"mdi:white-balance-sunny", style:"heat_selected_comfort"},
@@ -57,12 +49,9 @@ const HVACMODES = [ // https://cdn.materialdesignicons.com/7.1.96/
 ];
 
 // heat modes for darkMode
-const HVACMODES_dark = [ // https://cdn.materialdesignicons.com/7.1.96/
-    {name:"off", icon:"mdi:minus-circle", style:"heat_selected_none_dark"},
-    {name:"comfort", icon:"mdi:white-balance-sunny", style:"heat_selected_comfort_dark"},
-    {name:"eco", icon:"mdi:weather-night", style:"heat_selected_eco_dark"}, 
-    {name:"away", icon:"mdi:snowflake", style:"heat_selected_away_dark"}
-];
+const MODES_dark = MODES.map(({...x}) => {x.style = x.style+"_dark"; return x })
+const HVACMODES_dark = HVACMODES.map(({...x}) => {x.style = x.style+"_dark"; return x })
+
 
 class HeatzyPiloteCard extends LitElement {
 
