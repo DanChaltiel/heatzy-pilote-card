@@ -159,8 +159,7 @@ class HeatzyPiloteCard extends LitElement {
         entity_id: entity_id,
         hvac_mode: 'off'
       });
-    }
-    else {
+    } else {
       this.hass.callService('climate', 'set_preset_mode', {
         entity_id: entity_id,
         preset_mode: clicked_mode
