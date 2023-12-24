@@ -43,3 +43,7 @@ elements:
     temp_sensor: sensor.bureau_temperature
     friendly_name: Bureau
 ```
+
+| Light mode   | Dark mode   |
+|--------------|-------------|
+| ![image](https://github.com/DanChaltiel/heatzy-pilote-card/assets/15105152/40e6983b-8e69-4363-b77c-6bf92bff9925) | ![image](https://github.com/DanChaltiel/heatzy-pilote-card/assets/15105152/7ff3578e-ad1b-4008-ae25-b2225fb1d66a) |
