@@ -86,50 +86,27 @@ class HeatzyPiloteCard extends LitElement {
       const preset_mode = stateObj.attributes.preset_mode; // (null), comfort, eco, away
       const preset_mode_tr = this._getPresetModeTranslation(preset_mode);
       const hvac_mode_tr = this._getHvacModeTranslation(hvac_mode);
-      if (darkMode == true) {
-        if (hvac_mode != 'off') {
-          return stateObj ?
-            html`<div class="state">      
-				  <h4 class="heat_name">${name} ${temp}</h4>    
-				  <span class="heat_icon_list">
-					${preset_mode_tr} ${this._getIconList(MODES_dark, preset_mode, stateObj.entity_id)}
-				  </span>
-				</div>`:
-            html`<div class="not-found">Entity '${ent}' not found.</div>`;
-        }
-        else {
-          return stateObj ?
-            html`<div class="state">      
-				  <h4 class="heat_name">${name} ${temp}</h4>    
-				  <span class="heat_icon_list">
-					${hvac_mode_tr} ${this._getIconList(HVACMODES_dark, hvac_mode, stateObj.entity_id)}
-				  </span>
-				</div>`:
-            html`<div class="not-found">Entity '${ent}' not found.</div>`;
-        }
-      }
-      if (darkMode != true) {
-        if (hvac_mode != 'off') {
-          return stateObj ?
-            html`<div class="state">      
-				  <h4 class="heat_name">${name} ${temp}</h4>    
-				  <span class="heat_icon_list">
-					${preset_mode_tr} ${this._getIconList(MODES, preset_mode, stateObj.entity_id)}
-				  </span>
-				</div>`:
-            html`<div class="not-found">Entity '${ent}' not found.</div>`;
-        }
-        else {
-          return stateObj ?
-            html`<div class="state">      
-				  <h4 class="heat_name">${name} ${temp}</h4>    
-				  <span class="heat_icon_list">
-					${hvac_mode_tr} ${this._getIconList(HVACMODES, hvac_mode, stateObj.entity_id)}
-				  </span>
-				</div>`:
-            html`<div class="not-found">Entity '${ent}' not found.</div>`;
-        }
-      }
+
+      let translation;
+      let modeList;
+      let modeSelected;
+      if (hvac_mode != 'off') {
+        translation = hvac_mode_tr;
+        modeList = darkMode? MODES_dark : MODES;
+        modeSelected = preset_mode;
+      } else {
+        translation = preset_mode_tr;
+        modeList =  darkMode? HVACMODES_dark : HVACMODES;
+        modeSelected = hvac_mode;
+      };
+      return stateObj ?
+        html`<div class="state">      
+          <h4 class="heat_name">${name} ${temp}</h4>    
+          <span class="heat_icon_list">
+          ${translation} ${this._getIconList(modeList, modeSelected, stateObj.entity_id)}
+          </span>
+        </div>`:
+        html`<div class="not-found">Entity '${ent}' not found.</div>`;
     });
   }
 
