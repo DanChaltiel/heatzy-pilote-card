@@ -8,10 +8,15 @@ import {
 const translation = {
   en: {
     modes: {
-      "none": "None",
+      "none": "Off",
       "away": "Away",
       "eco": "Eco",
       "comfort": "Comfort"
+    },
+    hvacmodes: {
+      "auto": "Sched",
+      "off": "Off",
+      "heat": "On"
     }
   },
   fr: {
@@ -20,21 +25,37 @@ const translation = {
       "away": "Hors-gel",
       "eco": "Eco",
       "comfort": "Confort"
+    },
+    hvacmodes: {
+      "auto": "Prog",
+      "off": "Off",
+      "heat": "On"
     }
   }
 };
 
-
-const MODES = [ // https://cdn.materialdesignicons.com/5.3.45/
-    {name:"none", icon:"mdi:do-not-disturb"}, 
-    {name:"away", icon:"mdi:snowflake"},
-    {name:"eco", icon:"mdi:leaf"}, 
-    {name:"comfort", icon:"mdi:white-balance-sunny"} 
+const MODES = [ // https://cdn.materialdesignicons.com/7.1.96/
+  { name: "none", icon: "mdi:minus-circle", style: "heat_selected_none" },
+  { name: "comfort", icon: "mdi:white-balance-sunny", style: "heat_selected_comfort" },
+  { name: "eco", icon: "mdi:weather-night", style: "heat_selected_eco" },
+  { name: "away", icon: "mdi:snowflake", style: "heat_selected_away" }
 ];
+
+const HVACMODES = [ // https://cdn.materialdesignicons.com/7.1.96/
+  { name: "off", icon: "mdi:minus-circle", style: "heat_selected_none" },
+  { name: "comfort", icon: "mdi:white-balance-sunny", style: "heat_selected_comfort" },
+  { name: "eco", icon: "mdi:weather-night", style: "heat_selected_eco" },
+  { name: "away", icon: "mdi:snowflake", style: "heat_selected_away" }
+];
+
+// heat modes for darkMode
+const MODES_dark = MODES.map(({ ...x }) => { x.style = x.style + "_dark"; return x })
+const HVACMODES_dark = HVACMODES.map(({ ...x }) => { x.style = x.style + "_dark"; return x })
+
 
 class HeatzyPiloteCard extends LitElement {
 
-  render() { 
+  render() {
     return html`
         <ha-card>
             ${this._getTitle()}           
@@ -46,128 +67,164 @@ class HeatzyPiloteCard extends LitElement {
     `;
   }
 
-  _getTitle() {    
-    if(this.config.title){
-      return html`<h1 class="card-header">${this.config.title}</h1>`;
+  _getTitle() {
+    if (this.config.title) {
+      return html`<h2 class="card-header">${this.config.title}</h2>`;
     }
     return html``;
   }
-  
-  _getContent(){
+
+  _getContent() {
     return this.config.elements.map(elt => {
+      const darkMode = this.hass.themes.darkMode;
       const ent = elt.entity;
       const name = elt.friendly_name ? elt.friendly_name : this._inferName(ent);
       const temp = this._getTemperature(elt.temp_sensor, 1);
       const stateObj = this.hass.states[ent];
-      const preset_mode = stateObj.attributes.preset_mode;
+      const hvac_mode = stateObj.state // off, auto, heat
+      const hvac_action = stateObj.attributes.hvac_action; // off, heating
+      const preset_mode = stateObj.attributes.preset_mode; // (null), comfort, eco, away
       const preset_mode_tr = this._getPresetModeTranslation(preset_mode);
+      const hvac_mode_tr = this._getHvacModeTranslation(hvac_mode);
+
+      let translation;
+      let modeList;
+      let modeSelected;
+      if (hvac_mode != 'off') {
+        translation = hvac_mode_tr;
+        modeList = darkMode ? MODES_dark : MODES;
+        modeSelected = preset_mode;
+      } else {
+        translation = preset_mode_tr;
+        modeList = darkMode ? HVACMODES_dark : HVACMODES;
+        modeSelected = hvac_mode;
+      };
       return stateObj ?
         html`<div class="state">      
-          <h2 class="heat_name">${name} ${temp}</h2>    
+          <h4 class="heat_name">${name} ${temp}</h4>    
           <span class="heat_icon_list">
-            ${preset_mode_tr} ${this._getIconList(MODES, preset_mode, stateObj.entity_id)}
+          ${translation} ${this._getIconList(modeList, modeSelected, stateObj.entity_id)}
           </span>
         </div>`:
         html`<div class="not-found">Entity '${ent}' not found.</div>`;
     });
   }
 
-  _getIconList(modes_list, mode_selected, entity_id){
-      return modes_list.map(x => {
-          x.heat_class=x.name==mode_selected?'heat_selected':'';
-          const xx = html`<ha-icon class="heat_icon ${x.heat_class}" icon="${x.icon}" 
-                           @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
-          return(xx);
-      });
+  _getIconList(modes_list, mode_selected, entity_id) {
+    return modes_list.map(x => {
+      const darkMode = this.hass.themes.darkMode;
+      x.heat_class = x.name == mode_selected ? 'heat_selected' : '';
+      const classSelected = x.name == mode_selected ? x.style : x.heat_class;
+      const classDark = darkMode ? "heat_icon_dark" : "heat_icon";
+
+      const xx = html`<ha-icon class="${classDark} ${classSelected}" icon="${x.icon}" 
+      @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
+      return (xx);
+    });
   }
-  
-  _getPresetModeTranslation(preset_mode){
+
+  _getPresetModeTranslation(preset_mode) {
     const language = this.config.language;
     return translation[language].modes[preset_mode];
   }
-  
-  _inferName(x){
+
+  _getHvacModeTranslation(hvac_mode) {
+    const language = this.config.language;
+    return translation[language].hvacmodes[hvac_mode];
+  }
+
+  _inferName(x) {
     x = x.replace("climate.", "");
-    return x.charAt(0).toUpperCase() + x.slice(1); 
+    return x.charAt(0).toUpperCase() + x.slice(1);
   }
-  
-  
-  _getTemperature(sensor, digits){
+
+
+  _getTemperature(sensor, digits) {
     const temp = this.hass.states[sensor];
-    if(sensor!=undefined && temp==undefined){ //sensor in unknrown
-      return(html`(?°C)`);
+    if (sensor != undefined && temp == undefined) { //sensor in unknown
+      return (html`(?°C)`);
     }
-    
-    if(sensor){
+
+    if (sensor) {
       const temperature = parseFloat(temp.state).toFixed(digits);
-      return(html`(${temperature}${temp.attributes.unit_of_measurement})`);
-    } 
-    return(html``);
+      return (html`(${temperature}${temp.attributes.unit_of_measurement})`);
+    }
+    return (html``);
   }
 
 
-  _handleClick(entity_id, preset_mode) {
-    this.hass.callService('climate', 'set_preset_mode', {
-      entity_id: entity_id,
-      preset_mode: preset_mode
-    });
+  _handleClick(entity_id, clicked_mode) {
+    if (clicked_mode == 'none') {
+      this.hass.callService('climate', 'set_hvac_mode', {
+        entity_id: entity_id,
+        hvac_mode: 'off'
+      });
+    } else {
+      this.hass.callService('climate', 'set_preset_mode', {
+        entity_id: entity_id,
+        preset_mode: clicked_mode
+      });
+    }
   }
-  
-  
-  _getWarnings() {    
+
+
+  _getWarnings() {
     const elts = this.config.elements
-        
-    //check: entity is a climate with a "preset mode" attribute
-    for (let i=0; i<elts.length; i++){
+
+    //check: entity is a climate with a "preset mode" attribute / ajouté si hvac_action off
+    for (let i = 0; i < elts.length; i++) {
       const elt = elts[i];
       const entity = this.hass.states[elt.entity];
-      if(entity.attributes.preset_mode==undefined){
-        const name = elt.friendly_name? html`("${elt.friendly_name}") ` : html``;
-        return html`<hui-warning>Entity "${elt.entity}" of element #${i+1} ${name}is not a climate entity with a "preset_mode" attribute</hui-warning>`;
+      if (entity.attributes.hvac_action != 'off') {
+        if (entity.attributes.preset_mode == undefined) {
+          const name = elt.friendly_name ? html`("${elt.friendly_name}") ` : html``;
+          return html`<hui-warning>Entity "${elt.entity}" of element #${i + 1} ${name}is not a climate entity with a "preset_mode" attribute</hui-warning>`;
+        };
       }
     }
-    
+
     //check: temperature sensor is not unknown
-    for (let i=0; i<elts.length; i++){
+    for (let i = 0; i < elts.length; i++) {
       const elt = elts[i];
       const temp = this.hass.states[elt.temp_sensor];
-      if(elt.temp_sensor!=undefined && temp==undefined){
-        const name = elt.friendly_name? html`("${elt.friendly_name}") ` : html``;
-        return html`<hui-warning>Sensor "${elt.temp_sensor}" of element #${i+1} ${name}is unknown</hui-warning>`;
+      if (elt.temp_sensor != undefined && temp == undefined) {
+        const name = elt.friendly_name ? html`("${elt.friendly_name}") ` : html``;
+        return html`<hui-warning>Sensor "${elt.temp_sensor}" of element #${i + 1} ${name}is unknown</hui-warning>`;
       }
     }
-    
+
     return html``;
   }
-  
+
   setConfig(config) {
     //elements must be defined
     if (!config.elements) {
       throw new Error("You need to define elements");
     }
-    
+
     //each element must have an entity
-    for (let i=0; i<config.elements.length;i++){
+    for (let i = 0; i < config.elements.length; i++) {
       const elt = config.elements[i];
       if (!elt.entity) {
-        throw new Error("You need to define a climate entity for element #"+i);
+        throw new Error("You need to define a climate entity for element #" + i);
       }
-    }    
-    
+    }
+
     //translation is supported
-    if(config.language == undefined){
+    if (config.language == undefined) {
       config.language = "en"
-    } else if(translation[config.language]==undefined){
+    } else if (translation[config.language] == undefined) {
       throw new Error(`Supported languages are only ["en", "fr"]. "${config.language}" is not a supported language.`);
     }
-    
+
     this.config = config;
   }
 
   getCardSize() {
     return this.config.elements.length + 1;
   }
-  
+
+  // CSS styles for light/dark modes  
   static get styles() {
     return css`
         .state {
@@ -186,6 +243,16 @@ class HeatzyPiloteCard extends LitElement {
             margin:0;
             margin-left:25px;
         }
+        
+        .state h3 {
+            margin:0;
+            margin-left:15px;
+        }
+        
+        .state h4 {
+            margin:0;
+            margin-left:15px;
+        }
 
         .heat_icon_list {
             float:right;
@@ -203,8 +270,37 @@ class HeatzyPiloteCard extends LitElement {
         .heat_selected{
             color: green !important;
         }
+        .heat_selected_none{
+            color: #003333 !important;
+        }
+        .heat_selected_away{
+            color: #3366CC !important;
+        }
+        .heat_selected_eco{
+            color: #003333 !important;
+        }
+        .heat_selected_comfort{
+            color: #CC3333 !important;
+        }
+        .heat_selected_none_dark{
+            color: #cecece !important;
+        }
+        .heat_selected_away_dark{
+            color: #488FC2 !important;
+        }
+        .heat_selected_eco_dark{
+            color: #0F9D58 !important;
+        }
+        .heat_selected_comfort_dark{
+            color: #CC3333 !important;
+        }
         .heat_icon{
-            color: grey;
+            color: #CCCCCC;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .heat_icon_dark{
+            color: #6F6F6F;
             cursor: pointer;
             margin-left: 10px;
         }
