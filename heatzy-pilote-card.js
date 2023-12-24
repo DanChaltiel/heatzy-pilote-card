@@ -92,11 +92,11 @@ class HeatzyPiloteCard extends LitElement {
       let modeSelected;
       if (hvac_mode != 'off') {
         translation = hvac_mode_tr;
-        modeList = darkMode? MODES_dark : MODES;
+        modeList = darkMode ? MODES_dark : MODES;
         modeSelected = preset_mode;
       } else {
         translation = preset_mode_tr;
-        modeList =  darkMode? HVACMODES_dark : HVACMODES;
+        modeList = darkMode ? HVACMODES_dark : HVACMODES;
         modeSelected = hvac_mode;
       };
       return stateObj ?
@@ -113,18 +113,13 @@ class HeatzyPiloteCard extends LitElement {
   _getIconList(modes_list, mode_selected, entity_id) {
     return modes_list.map(x => {
       const darkMode = this.hass.themes.darkMode;
-      if (darkMode == true) {
-        x.heat_class = x.name == mode_selected ? x.style : '';
-        const xx = html`<ha-icon class="heat_icon_dark ${x.heat_class}" icon="${x.icon}" 
-							   @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
-        return (xx);
-      }
-      if (darkMode != true) {
-        x.heat_class = x.name == mode_selected ? x.style : '';
-        const xx = html`<ha-icon class="heat_icon ${x.heat_class}" icon="${x.icon}" 
-							   @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
-        return (xx);
-      }
+      x.heat_class = x.name == mode_selected ? 'heat_selected' : '';
+      const classSelected = x.name == mode_selected ? x.style : x.heat_class;
+      const classDark = darkMode ? "heat_icon_dark" : "heat_icon";
+
+      const xx = html`<ha-icon class="${classDark} ${classSelected}" icon="${x.icon}" 
+      @click="${e => this._handleClick(entity_id, x.name)}"></ha-icon>`;
+      return (xx);
     });
   }
 
