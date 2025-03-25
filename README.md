@@ -1,6 +1,6 @@
 # Heatzy Pilote Card
 
-[![HACS Supported](https://img.shields.io/badge/HACS-Not_Supported-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![HACS Supported](https://img.shields.io/badge/HACS-Supported-green.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 
 Cette card est basée sur l'intégration de [Cyr-ius](https://github.com/Cyr-ius/hass-heatzy)
 
